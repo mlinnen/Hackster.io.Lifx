@@ -1,7 +1,4 @@
 ﻿using Lifx.UI.UWP.Services;
-using org.alljoyn.About;
-using org.alljoyn.Config;
-using org.allseen.LSF.LampState;
 using Prism.Commands;
 using Prism.Windows.Mvvm;
 using Prism.Windows.Navigation;
