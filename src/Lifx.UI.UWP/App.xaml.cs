@@ -9,7 +9,13 @@ using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-
+using Lifx.UI.UWP.Services;
+using Prism.Events;
+using Prism.Windows.Navigation;
+using Lifx.UI.UWP.ViewModels;
+using Prism.Mvvm;
+using System.Globalization;
+using System.Reflection;
 
 namespace Lifx.UI.UWP
 {
@@ -24,6 +30,8 @@ namespace Lifx.UI.UWP
             InitializeComponent();
         }
 
+        public IEventAggregator EventAggregator { get; set; }
+
         protected override UIElement CreateShell(Frame rootFrame)
         {
             var shell = Container.Resolve<AppShell>();
@@ -31,9 +39,23 @@ namespace Lifx.UI.UWP
             return shell;
         }
 
+        protected override void OnRegisterKnownTypesForSerialization()
+        {
+        }
+
         protected override Task OnInitializeAsync(IActivatedEventArgs args)
         {
-            //Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
+            EventAggregator = new EventAggregator();
+            Container.RegisterInstance<INavigationService>(NavigationService);
+            Container.RegisterInstance<ISessionStateService>(SessionStateService);
+            Container.RegisterInstance<IEventAggregator>(EventAggregator);
+
+            Container.RegisterType<ILampService, LampService>(new ContainerControlledLifetimeManager());
+
+            var lampService = Container.Resolve<ILampService>();
+            lampService.Start();
+
+
             return base.OnInitializeAsync(args);
         }
 
