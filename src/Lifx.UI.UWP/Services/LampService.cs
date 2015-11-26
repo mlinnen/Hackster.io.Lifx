@@ -35,15 +35,21 @@ namespace Lifx.UI.UWP.Services
             LampWatcher lampWatcher = new LampWatcher(busAttachment);
             lampWatcher.Added += LampWatcher_Added;
             lampWatcher.Start();
+
+            //var model = new LampStateViewModel(this);
+            //model.Name = "TEst";
+            //Lamps.Add(model);
+
             return 0;
         }
 
-        public void Stop()
+        public int Stop()
         {
             if (_lamp!=null)
             {
                 _lamp.Dispose();
             }
+            return 0;
         }
 
         private async void LampWatcher_Added(org.allseen.LSF.ControllerService.Lamp.LampWatcher sender, AllJoynServiceInfo args)
@@ -55,9 +61,9 @@ namespace Lifx.UI.UWP.Services
                 var lamps = await _lamp.GetAllLampIDsAsync();
                 foreach (var lamp in lamps.LampIDs)
                 {
-                    var lampModel = new LampStateViewModel();
-
+                    var lampModel = new LampStateViewModel(this);
                     var lampDetails = await _lamp.GetLampDetailsAsync(lamp);
+                    lampModel.Id = lampDetails.LampID;
                     var lampState = await _lamp.GetLampStateAsync(lamp);
                     foreach (var stateItem in lampState.LampState)
                     {
@@ -90,9 +96,54 @@ namespace Lifx.UI.UWP.Services
             var lamp = _lamps.SingleOrDefault(o => o.Id == args.LampID);
             if (lamp != null)
             {
+                object on = false;
+                if (args.LampState.TryGetValue("OnOff", out on))
+                    lamp.On = Convert.ToBoolean(on);
 
+                object hue = 0;
+                if (args.LampState.TryGetValue("Hue", out hue))
+                    lamp.Hue = Convert.ToDouble(hue);
+
+                object brightness = 0;
+                if (args.LampState.TryGetValue("Brightness", out brightness))
+                    lamp.Brightness = Convert.ToDouble(brightness);
+
+                object colorTemp = 0;
+                if (args.LampState.TryGetValue("ColorTemp", out colorTemp))
+                    lamp.ColorTemp = Convert.ToDouble(colorTemp);
+
+                object saturation = 0;
+                if (args.LampState.TryGetValue("Saturation", out saturation))
+                    lamp.Saturation = Convert.ToDouble(saturation);
             }
         }
 
+        public async Task ToggleAsync(string id)
+        {
+            var lamp = _lamps.SingleOrDefault(o => o.Id == id);
+            if (lamp != null)
+            {
+                var newState = !lamp.On;
+                var result = await _lamp.TransitionLampStateFieldAsync(id, "OnOff", newState,0);
+            }
+        }
+
+        public async Task OnAsync(string id)
+        {
+            var lamp = _lamps.SingleOrDefault(o => o.Id == id);
+            if (lamp != null)
+            {
+                var result = await _lamp.TransitionLampStateFieldAsync(id, "OnOff", true, 0);
+            }
+        }
+
+        public async Task OffAssync(string id)
+        {
+            var lamp = _lamps.SingleOrDefault(o => o.Id == id);
+            if (lamp != null)
+            {
+                var result = await _lamp.TransitionLampStateFieldAsync(id, "OnOff", false, 0);
+            }
+        }
     }
 }

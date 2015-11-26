@@ -11,6 +11,10 @@ namespace Lifx.UI.UWP.Services
     public interface ILampService
     {
         int Start();
+        int Stop();
         ObservableCollection<LampStateViewModel> Lamps { get; set; }
+        Task ToggleAsync(string id);
+        Task OnAsync(string id);
+        Task OffAssync(string id);
     }
 }

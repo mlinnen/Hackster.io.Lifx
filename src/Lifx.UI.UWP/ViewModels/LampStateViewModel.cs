@@ -1,4 +1,5 @@
-﻿using Prism.Commands;
+﻿using Lifx.UI.UWP.Services;
+using Prism.Commands;
 using Prism.Windows.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -18,11 +19,12 @@ namespace Lifx.UI.UWP.ViewModels
         private double _brightness;
         private double _colorTemp;
         private double _saturation;
-        private string _lampButtonText;
         private bool _userUpdating;
+        private readonly ILampService _lampService;
 
-        public LampStateViewModel()
+        public LampStateViewModel(ILampService lampService)
         {
+            _lampService = lampService;
             ToggleLightCommand = new DelegateCommand(ToggleLight);
         }
 
@@ -106,6 +108,7 @@ namespace Lifx.UI.UWP.ViewModels
                 {
                     _userUpdating = true;
                     OnPropertyChanged("OnText");
+                    OnPropertyChanged("LampButtonText");
                 }
             }
         }
@@ -122,8 +125,12 @@ namespace Lifx.UI.UWP.ViewModels
 
         public string LampButtonText
         {
-            get { return _lampButtonText; }
-            set { SetProperty(ref _lampButtonText, value); }
+            get
+            {
+                if (_on)
+                    return "Off";
+                return "On";
+            }
         }
 
         private void Tick(object state)
@@ -143,10 +150,7 @@ namespace Lifx.UI.UWP.ViewModels
 
         private void ToggleLight()
         {
-            //if (_lampState != null)
-            //{
-            //    On = !On;
-            //}
+            _lampService.ToggleAsync(Id);
         }
 
         private void UpdateUI()

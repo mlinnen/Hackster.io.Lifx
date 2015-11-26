@@ -29,7 +29,14 @@ namespace Lifx.UI.UWP.ViewModels
 
         public MainPageViewModel(ILampService lampService)
         {
+            ToggleLightCommand = new DelegateCommand(ToggleLight);
             _lampService = lampService;
+        }
+        public ICommand ToggleLightCommand { get; private set; }
+
+        private void ToggleLight()
+        {
+            _lampService.ToggleAsync("");
         }
 
         public ObservableCollection<LampStateViewModel> Lamps

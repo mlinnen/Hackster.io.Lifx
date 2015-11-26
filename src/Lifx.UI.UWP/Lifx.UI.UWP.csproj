@@ -110,6 +110,9 @@
     <Compile Include="ViewModels\MenuItemViewModel.cs" />
     <Compile Include="ViewModels\MenuViewModel.cs" />
     <Compile Include="ViewModels\SecondPageViewModel.cs" />
+    <Compile Include="Views\LampListItemView.xaml.cs">
+      <DependentUpon>LampListItemView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LampPage.xaml.cs">
       <DependentUpon>LampPage.xaml</DependentUpon>
     </Compile>
@@ -151,6 +154,10 @@
     <Page Include="Themes\SplitViewSampleStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\LampListItemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LampPage.xaml">
       <SubType>Designer</SubType>
